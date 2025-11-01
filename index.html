@@ -36,20 +36,12 @@
         .container {
             max-width: 1200px;
             width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
         }
         
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
         header {
-            grid-column: 1 / -1;
             text-align: center;
             margin-bottom: 30px;
             padding: 30px;
@@ -60,6 +52,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
         
         header::before {
@@ -88,6 +81,19 @@
             max-width: 600px;
             margin: 0 auto;
             line-height: 1.6;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
         }
         
         .compass-section {
@@ -285,6 +291,7 @@
             gap: 15px;
             margin-top: 20px;
             flex-wrap: wrap;
+            justify-content: center;
         }
         
         button {
@@ -300,9 +307,6 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            flex: 1;
-            min-width: 200px;
-            justify-content: center;
         }
         
         button:hover {
@@ -363,6 +367,7 @@
             flex-direction: column;
             gap: 15px;
             margin-top: 20px;
+            width: 100%;
         }
         
         .direction-controls {
@@ -394,13 +399,13 @@
         }
         
         footer {
-            grid-column: 1 / -1;
             text-align: center;
             margin-top: 40px;
             padding: 20px;
             color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
         }
         
         .feature-list {
@@ -437,10 +442,14 @@
             .action-buttons {
                 flex-direction: column;
             }
-            
-            button {
-                min-width: auto;
-            }
+        }
+        
+        .compass-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            text-align: center;
         }
     </style>
 </head>
@@ -451,95 +460,101 @@
             <p class="subtitle">أداة متطورة لتحديد اتجاه القبلة بدقة عالية من أي مكان في العالم</p>
         </header>
         
-        <section class="compass-section">
-            <div class="compass-container">
-                <div class="compass">
-                    <div class="compass-inner">
-                        <div class="compass-direction north"><i class="fas fa-arrow-up"></i> شمال</div>
-                        <div class="compass-direction south">جنوب <i class="fas fa-arrow-down"></i></div>
-                        <div class="compass-direction east">شرق <i class="fas fa-arrow-right"></i></div>
-                        <div class="compass-direction west"><i class="fas fa-arrow-left"></i> غرب</div>
-                        <div class="qibla-indicator" id="qiblaIndicator"></div>
-                        <div class="qibla-label">القبلة</div>
-                        <div class="center-dot"></div>
-                        <div class="compass-rose"></div>
+        <div class="content">
+            <section class="compass-section">
+                <div class="compass-container">
+                    <div class="compass">
+                        <div class="compass-inner">
+                            <div class="compass-direction north"><i class="fas fa-arrow-up"></i> شمال</div>
+                            <div class="compass-direction south">جنوب <i class="fas fa-arrow-down"></i></div>
+                            <div class="compass-direction east">شرق <i class="fas fa-arrow-right"></i></div>
+                            <div class="compass-direction west"><i class="fas fa-arrow-left"></i> غرب</div>
+                            <div class="qibla-indicator" id="qiblaIndicator"></div>
+                            <div class="qibla-label">القبلة</div>
+                            <div class="center-dot"></div>
+                            <div class="compass-rose"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="action-buttons">
-                <button id="locateBtn">
-                    <i class="fas fa-location-crosshairs"></i> تحديد موقعي
-                </button>
-                <button id="manualBtn" class="secondary">
-                    <i class="fas fa-map-marked-alt"></i> إدخال موقع يدوي
-                </button>
-            </div>
-            
-            <div class="manual-control" id="manualControl" style="display: none;">
-                <div class="direction-controls">
-                    <button class="direction-btn" data-direction="0">
-                        <i class="fas fa-kaaba"></i> اتجاه القبلة
+                
+                <div class="compass-status" id="compassStatus">
+                    البوصلة جاهزة - حرك هاتفك لرؤية التغيير
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="locateBtn">
+                        <i class="fas fa-location-crosshairs"></i> تحديد موقعي
                     </button>
-                    <button class="direction-btn" data-direction="90">
-                        <i class="fas fa-sun"></i> اتجاه الشرق
-                    </button>
-                    <button class="direction-btn" data-direction="180">
-                        <i class="fas fa-compass"></i> اتجاه الجنوب
-                    </button>
-                    <button class="direction-btn" data-direction="270">
-                        <i class="fas fa-moon"></i> اتجاه الغرب
+                    <button id="manualBtn" class="secondary">
+                        <i class="fas fa-map-marked-alt"></i> إدخال موقع يدوي
                     </button>
                 </div>
-            </div>
-        </section>
-        
-        <section class="info-section">
-            <div class="info-card">
-                <h3><i class="fas fa-info-circle"></i> معلومات الموقع</h3>
-                <div class="data-item">
-                    <span class="data-label">الإحداثيات:</span>
-                    <span class="data-value" id="locationText">غير محدد</span>
-                </div>
-                <div class="data-item">
-                    <span class="data-label">الاتجاه:</span>
-                    <span class="data-value" id="qiblaDirection">غير محسوب</span>
-                </div>
-                <div class="data-item">
-                    <span class="data-label">المسافة إلى القبلة:</span>
-                    <span class="data-value" id="qiblaDistance">غير محسوبة</span>
-                </div>
-            </div>
-            
-            <div class="info-card">
-                <h3><i class="fas fa-cogs"></i> إعدادات البوصلة</h3>
-                <p>لأفضل دقة، يرجى اتباع التعليمات التالية:</p>
-                <div class="feature-list">
-                    <div class="feature">
-                        <i class="fas fa-check-circle"></i>
-                        <span>تفعيل خدمة الموقع</span>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-check-circle"></i>
-                        <span>السماح للبوصلة بالوصول إلى المستشعرات</span>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-check-circle"></i>
-                        <span>معايرة البوصلة بحركة شكل 8</span>
+                
+                <div class="manual-control" id="manualControl" style="display: none;">
+                    <div class="direction-controls">
+                        <button class="direction-btn" data-direction="0">
+                            <i class="fas fa-kaaba"></i> اتجاه القبلة
+                        </button>
+                        <button class="direction-btn" data-direction="90">
+                            <i class="fas fa-sun"></i> اتجاه الشرق
+                        </button>
+                        <button class="direction-btn" data-direction="180">
+                            <i class="fas fa-compass"></i> اتجاه الجنوب
+                        </button>
+                        <button class="direction-btn" data-direction="270">
+                            <i class="fas fa-moon"></i> اتجاه الغرب
+                        </button>
                     </div>
                 </div>
-            </div>
+            </section>
             
-            <div class="info-card">
-                <h3><i class="fas fa-lightbulb"></i> نصائح للاستخدام</h3>
-                <p>لضمان دقة اتجاه القبلة، يرجى التأكد من:</p>
-                <ul style="margin-top: 10px; padding-right: 20px; line-height: 1.8;">
-                    <li>البعد عن المصادر المغناطيسية مثل الهواتف والأجهزة الإلكترونية</li>
-                    <li>الوقوف في مكان مفتوح بعيداً عن المباني المرتفعة</li>
-                    <li>التحقق من الاتجاه باستخدام علامات معروفة كالشمس في أوقات محددة</li>
-                </ul>
-            </div>
-        </section>
+            <section class="info-section">
+                <div class="info-card">
+                    <h3><i class="fas fa-info-circle"></i> معلومات الموقع</h3>
+                    <div class="data-item">
+                        <span class="data-label">الإحداثيات:</span>
+                        <span class="data-value" id="locationText">غير محدد</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">الاتجاه:</span>
+                        <span class="data-value" id="qiblaDirection">غير محسوب</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">المسافة إلى القبلة:</span>
+                        <span class="data-value" id="qiblaDistance">غير محسوبة</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-cogs"></i> إعدادات البوصلة</h3>
+                    <p>لأفضل دقة، يرجى اتباع التعليمات التالية:</p>
+                    <div class="feature-list">
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>تفعيل خدمة الموقع</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>السماح للبوصلة بالوصول إلى المستشعرات</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>معايرة البوصلة بحركة شكل 8</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-lightbulb"></i> نصائح للاستخدام</h3>
+                    <p>لضمان دقة اتجاه القبلة، يرجى التأكد من:</p>
+                    <ul style="margin-top: 10px; padding-right: 20px; line-height: 1.8;">
+                        <li>البعد عن المصادر المغناطيسية مثل الهواتف والأجهزة الإلكترونية</li>
+                        <li>الوقوف في مكان مفتوح بعيداً عن المباني المرتفعة</li>
+                        <li>التحقق من الاتجاه باستخدام علامات معروفة كالشمس في أوقات محددة</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
         
         <div class="loading" id="loading">
             <div class="loading-spinner"></div>
@@ -574,10 +589,13 @@
             const qiblaIndicator = document.getElementById('qiblaIndicator');
             const successMessage = document.getElementById('successMessage');
             const directionBtns = document.querySelectorAll('.direction-btn');
+            const compassStatus = document.getElementById('compassStatus');
+            const compass = document.querySelector('.compass');
             
             let currentLatitude = null;
             let currentLongitude = null;
             let qiblaBearing = null;
+            let compassActive = false;
             
             // إحداثيات الكعبة المشرفة (القبلة)
             const KAABA_LAT = 21.4225;
@@ -634,6 +652,65 @@
                 }, 3000);
             }
             
+            // دالة لمعالجة بيانات مستشعر الجهاز
+            function handleOrientation(event) {
+                if (!compassActive) return;
+                
+                let alpha = event.alpha; // اتجاه البوصلة (0-360)
+                const beta = event.beta; // الميل الأمامي/الخلفي (-180 to 180)
+                const gamma = event.gamma; // الميل الجانبي (-90 to 90)
+                
+                // بعض الأجهزة لا توفر alpha مباشرة
+                if (alpha === null) {
+                    // محاولة حساب alpha من gamma و beta
+                    if (gamma !== null && beta !== null) {
+                        alpha = Math.atan2(gamma, beta) * 180 / Math.PI;
+                        if (alpha < 0) alpha += 360;
+                    } else {
+                        return; // لا توجد بيانات كافية
+                    }
+                }
+                
+                // تصحيح للأنظمة المختلفة
+                if (typeof event.webkitCompassHeading !== 'undefined') {
+                    alpha = event.webkitCompassHeading; // لأجهزة iOS
+                }
+                
+                // تحديث البوصلة مع اتجاه القبلة
+                if (qiblaBearing !== null) {
+                    const compassBearing = (360 - alpha + qiblaBearing) % 360;
+                    updateCompass(compassBearing);
+                    compassStatus.textContent = `البوصلة نشطة - الاتجاه: ${Math.round(compassBearing)}°`;
+                }
+            }
+            
+            // دالة لتفعيل البوصلة
+            function activateCompass() {
+                if (typeof DeviceOrientationEvent !== 'undefined') {
+                    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                        // لأجهزة iOS - تحتاج إلى إذن
+                        DeviceOrientationEvent.requestPermission()
+                            .then(permissionState => {
+                                if (permissionState === 'granted') {
+                                    window.addEventListener('deviceorientation', handleOrientation);
+                                    compassActive = true;
+                                    compassStatus.textContent = "البوصلة مفعلة - حرك هاتفك لرؤية التغيير";
+                                } else {
+                                    compassStatus.textContent = "تم رفض إذن البوصلة - استخدم التحكم اليدوي";
+                                }
+                            })
+                            .catch(console.error);
+                    } else {
+                        // لأجهزة Android والمتصفحات الأخرى
+                        window.addEventListener('deviceorientation', handleOrientation);
+                        compassActive = true;
+                        compassStatus.textContent = "البوصلة مفعلة - حرك هاتفك لرؤية التغيير";
+                    }
+                } else {
+                    compassStatus.textContent = "المتصفح لا يدعم البوصلة - استخدم التحكم اليدوي";
+                }
+            }
+            
             // دالة للحصول على الموقع
             function getLocation() {
                 loading.style.display = 'block';
@@ -654,7 +731,10 @@
                             const distance = calculateDistance(currentLatitude, currentLongitude, KAABA_LAT, KAABA_LNG);
                             qiblaDistance.textContent = `${distance.toFixed(0)} كم`;
                             
-                            // تحديث البوصلة
+                            // تفعيل البوصلة
+                            activateCompass();
+                            
+                            // تحديث البوصلة بالاتجاه الأولي
                             updateCompass(qiblaBearing);
                             
                             loading.style.display = 'none';
@@ -714,6 +794,7 @@
                     // تحديث المعلومات لعرض الاتجاه المحدد
                     locationText.textContent = 'مدخل يدوي';
                     qiblaDistance.textContent = 'غير محسوبة';
+                    compassStatus.textContent = 'وضع التحكم اليدوي';
                 });
             });
             
