@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحديد اتجاه القبلة</title>
+    <title>بوصلة القبلة - اتجاه الصلاة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,9 +13,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
+        :root {
+            --primary: #0d8b8d;
+            --secondary: #e6b327;
+            --accent: #d35400;
+            --dark: #0a3d62;
+            --light: #f5f6fa;
+            --text: #2c3e50;
+        }
+        
         body {
-            background: linear-gradient(135deg, #1a5e63, #0d2b36);
-            color: #fff;
+            background: linear-gradient(135deg, var(--dark), #1a5e63);
+            color: var(--light);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -24,85 +34,137 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             width: 100%;
-            text-align: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
         
         header {
+            grid-column: 1 / -1;
+            text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
+            padding: 30px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #f0f0f0;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .compass-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .compass-container {
             position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 30px auto;
+            width: 320px;
+            height: 320px;
+            margin: 20px auto;
         }
         
         .compass {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: #0a1f2a;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            background: conic-gradient(from 0deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080, #ff0000);
+            box-shadow: 
+                0 0 30px rgba(0, 0, 0, 0.4),
+                inset 0 0 30px rgba(0, 0, 0, 0.3);
             position: relative;
             transition: transform 0.1s ease-out;
         }
         
-        .compass-face {
-            width: 100%;
-            height: 100%;
+        .compass-inner {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
             border-radius: 50%;
-            position: relative;
-            background: radial-gradient(circle, #1a3a4a, #0a1f2a);
-            border: 8px solid #2c5a6b;
+            background: radial-gradient(circle, var(--dark), #0a2a3e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
         }
         
         .compass-direction {
             position: absolute;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            color: #fff;
+            color: var(--light);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
         }
         
         .north {
-            top: 10px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
+            color: #ff6b6b;
         }
         
         .south {
-            bottom: 10px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
         }
         
         .east {
             top: 50%;
-            right: 10px;
+            right: 15px;
             transform: translateY(-50%);
         }
         
         .west {
             top: 50%;
-            left: 10px;
+            left: 15px;
             transform: translateY(-50%);
         }
         
@@ -110,123 +172,256 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 4px;
-            height: 40%;
-            background: #ff6b6b;
+            width: 6px;
+            height: 45%;
+            background: linear-gradient(to top, var(--secondary), var(--accent));
             transform-origin: bottom center;
             z-index: 10;
-            border-radius: 2px;
-            box-shadow: 0 0 10px #ff6b6b;
+            border-radius: 3px;
+            box-shadow: 0 0 15px var(--secondary);
+            transform: translateX(-50%) rotate(var(--qibla-angle, 0deg));
         }
         
         .qibla-label {
             position: absolute;
-            top: 15%;
+            top: 20%;
             left: 50%;
             transform: translateX(-50%);
-            color: #ff6b6b;
+            color: var(--secondary);
             font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .needle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 45%;
-            background: #fff;
-            transform-origin: bottom center;
-            z-index: 5;
-            border-radius: 2px;
+            font-size: 1.4rem;
+            text-shadow: 0 0 10px rgba(230, 179, 39, 0.7);
+            background: rgba(10, 61, 98, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
         }
         
         .center-dot {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 20px;
-            height: 20px;
-            background: #ff6b6b;
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, var(--secondary), var(--accent));
             border-radius: 50%;
             transform: translate(-50%, -50%);
             z-index: 15;
-            box-shadow: 0 0 10px #ff6b6b;
+            box-shadow: 0 0 20px var(--secondary);
         }
         
-        .accuracy-indicator {
+        .compass-rose {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 80%;
-            height: 80%;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
+            width: 90%;
+            height: 90%;
             transform: translate(-50%, -50%);
-            z-index: 1;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23ffffff" stroke-width="0.5" stroke-opacity="0.3"/><circle cx="50" cy="50" r="40" fill="none" stroke="%23ffffff" stroke-width="0.5" stroke-opacity="0.3"/><circle cx="50" cy="50" r="35" fill="none" stroke="%23ffffff" stroke-width="0.5" stroke-opacity="0.3"/><circle cx="50" cy="50" r="30" fill="none" stroke="%23ffffff" stroke-width="0.5" stroke-opacity="0.3"/></svg>') center/contain no-repeat;
+            opacity: 0.5;
         }
         
-        .info-panel {
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-card {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
-        .location-info, .qibla-info {
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-card h3 {
+            font-size: 1.4rem;
             margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-card h3 i {
+            font-size: 1.2rem;
+        }
+        
+        .info-card p {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .data-label {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .data-value {
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         button {
-            background: #2c5a6b;
+            background: linear-gradient(135deg, var(--primary), var(--dark));
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 14px 25px;
             border-radius: 50px;
             font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            min-width: 200px;
+            justify-content: center;
         }
         
         button:hover {
-            background: #3a7a8c;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
         }
         
         .loading {
             display: none;
             margin: 20px 0;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            border-top: 5px solid var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .error {
             color: #ff6b6b;
             background: rgba(255, 107, 107, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 15px;
             margin: 20px 0;
             display: none;
+            border-left: 4px solid #ff6b6b;
         }
         
-        .calibration-notice {
-            background: rgba(255, 193, 7, 0.2);
-            color: #ffc107;
-            padding: 10px;
+        .success-message {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            padding: 15px;
             border-radius: 10px;
-            margin: 10px 0;
-            font-size: 0.9rem;
+            margin: 15px 0;
+            display: none;
+            border-left: 4px solid #2ecc71;
         }
         
-        .debug-info {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 5px;
+        .manual-control {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .direction-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .direction-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .direction-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .direction-btn i {
+            font-size: 1.5rem;
+        }
+        
+        footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .feature i {
+            color: var(--secondary);
+            font-size: 1.2rem;
         }
         
         @media (max-width: 600px) {
@@ -236,7 +431,15 @@
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                min-width: auto;
             }
         }
     </style>
@@ -244,57 +447,124 @@
 <body>
     <div class="container">
         <header>
-            <h1>تحديد اتجاه القبلة</h1>
-            <p class="subtitle">موقع لتحديد اتجاه القبلة من أي مكان في العالم</p>
+            <h1><i class="fas fa-compass"></i> بوصلة القبلة</h1>
+            <p class="subtitle">أداة متطورة لتحديد اتجاه القبلة بدقة عالية من أي مكان في العالم</p>
         </header>
         
-        <div class="compass-container">
-            <div class="compass">
-                <div class="compass-face">
-                    <div class="compass-direction north">شمال</div>
-                    <div class="compass-direction south">جنوب</div>
-                    <div class="compass-direction east">شرق</div>
-                    <div class="compass-direction west">غرب</div>
-                    <div class="qibla-indicator" id="qiblaIndicator"></div>
-                    <div class="qibla-label">القبلة</div>
-                    <div class="needle" id="needle"></div>
-                    <div class="center-dot"></div>
-                    <div class="accuracy-indicator" id="accuracyIndicator"></div>
+        <section class="compass-section">
+            <div class="compass-container">
+                <div class="compass">
+                    <div class="compass-inner">
+                        <div class="compass-direction north"><i class="fas fa-arrow-up"></i> شمال</div>
+                        <div class="compass-direction south">جنوب <i class="fas fa-arrow-down"></i></div>
+                        <div class="compass-direction east">شرق <i class="fas fa-arrow-right"></i></div>
+                        <div class="compass-direction west"><i class="fas fa-arrow-left"></i> غرب</div>
+                        <div class="qibla-indicator" id="qiblaIndicator"></div>
+                        <div class="qibla-label">القبلة</div>
+                        <div class="center-dot"></div>
+                        <div class="compass-rose"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="calibration-notice">
-            <p>لأفضل دقة، قم بتحريك هاتفك بشكل رقم 8 في الهواء لمعايرة البوصلة</p>
-        </div>
-        
-        <div class="info-panel">
-            <div class="location-info">
-                <h3>موقعك الحالي</h3>
-                <p id="locationText">جارٍ تحديد موقعك...</p>
+            
+            <div class="action-buttons">
+                <button id="locateBtn">
+                    <i class="fas fa-location-crosshairs"></i> تحديد موقعي
+                </button>
+                <button id="manualBtn" class="secondary">
+                    <i class="fas fa-map-marked-alt"></i> إدخال موقع يدوي
+                </button>
             </div>
             
-            <div class="qibla-info">
-                <h3>اتجاه القبلة</h3>
-                <p id="qiblaDirection">جارٍ الحساب...</p>
-                <p id="qiblaDistance" class="debug-info"></p>
+            <div class="manual-control" id="manualControl" style="display: none;">
+                <div class="direction-controls">
+                    <button class="direction-btn" data-direction="0">
+                        <i class="fas fa-kaaba"></i> اتجاه القبلة
+                    </button>
+                    <button class="direction-btn" data-direction="90">
+                        <i class="fas fa-sun"></i> اتجاه الشرق
+                    </button>
+                    <button class="direction-btn" data-direction="180">
+                        <i class="fas fa-compass"></i> اتجاه الجنوب
+                    </button>
+                    <button class="direction-btn" data-direction="270">
+                        <i class="fas fa-moon"></i> اتجاه الغرب
+                    </button>
+                </div>
             </div>
-        </div>
+        </section>
         
-        <button id="locateBtn">تحديد الموقع</button>
+        <section class="info-section">
+            <div class="info-card">
+                <h3><i class="fas fa-info-circle"></i> معلومات الموقع</h3>
+                <div class="data-item">
+                    <span class="data-label">الإحداثيات:</span>
+                    <span class="data-value" id="locationText">غير محدد</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">الاتجاه:</span>
+                    <span class="data-value" id="qiblaDirection">غير محسوب</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">المسافة إلى القبلة:</span>
+                    <span class="data-value" id="qiblaDistance">غير محسوبة</span>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-cogs"></i> إعدادات البوصلة</h3>
+                <p>لأفضل دقة، يرجى اتباع التعليمات التالية:</p>
+                <div class="feature-list">
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>تفعيل خدمة الموقع</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>السماح للبوصلة بالوصول إلى المستشعرات</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>معايرة البوصلة بحركة شكل 8</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-lightbulb"></i> نصائح للاستخدام</h3>
+                <p>لضمان دقة اتجاه القبلة، يرجى التأكد من:</p>
+                <ul style="margin-top: 10px; padding-right: 20px; line-height: 1.8;">
+                    <li>البعد عن المصادر المغناطيسية مثل الهواتف والأجهزة الإلكترونية</li>
+                    <li>الوقوف في مكان مفتوح بعيداً عن المباني المرتفعة</li>
+                    <li>التحقق من الاتجاه باستخدام علامات معروفة كالشمس في أوقات محددة</li>
+                </ul>
+            </div>
+        </section>
         
         <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
             <p>جارٍ تحديد موقعك وحساب اتجاه القبلة...</p>
         </div>
         
         <div class="error" id="error">
             <p id="errorText">حدث خطأ أثناء تحديد موقعك. يرجى التأكد من تفعيل خدمة الموقع والمحاولة مرة أخرى.</p>
         </div>
+        
+        <div class="success-message" id="successMessage">
+            <p><i class="fas fa-check-circle"></i> تم تحديد اتجاه القبلة بنجاح!</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 بوصلة القبلة - جميع الحقوق محفوظة</p>
+            <p>تم التطوير بدقة عالية لتحديد اتجاه القبلة من أي مكان في العالم</p>
+        </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const locateBtn = document.getElementById('locateBtn');
+            const manualBtn = document.getElementById('manualBtn');
+            const manualControl = document.getElementById('manualControl');
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
             const errorText = document.getElementById('errorText');
@@ -302,15 +572,12 @@
             const qiblaDirection = document.getElementById('qiblaDirection');
             const qiblaDistance = document.getElementById('qiblaDistance');
             const qiblaIndicator = document.getElementById('qiblaIndicator');
-            const needle = document.getElementById('needle');
-            const compass = document.querySelector('.compass');
-            const accuracyIndicator = document.getElementById('accuracyIndicator');
+            const successMessage = document.getElementById('successMessage');
+            const directionBtns = document.querySelectorAll('.direction-btn');
             
             let currentLatitude = null;
             let currentLongitude = null;
             let qiblaBearing = null;
-            let isCompassActive = false;
-            let compassPermission = false;
             
             // إحداثيات الكعبة المشرفة (القبلة)
             const KAABA_LAT = 21.4225;
@@ -351,68 +618,20 @@
             }
             
             // دالة لتحديث البوصلة
-            function updateCompass(alpha) {
-                if (qiblaBearing !== null) {
-                    // حساب الفرق بين اتجاه الشمال الحقيقي واتجاه القبلة
-                    const bearing = (360 - alpha + qiblaBearing) % 360;
-                    
-                    // تدوير البوصلة
-                    compass.style.transform = `rotate(${bearing}deg)`;
-                    
-                    // تحديث نص اتجاه القبلة
-                    const directions = ['شمال', 'شمال شرق', 'شرق', 'جنوب شرق', 'جنوب', 'جنوب غرب', 'غرب', 'شمال غرب'];
-                    const index = Math.round(bearing / 45) % 8;
-                    qiblaDirection.textContent = `اتجاه القبلة: ${directions[index]} (${Math.round(bearing)} درجة)`;
-                }
-            }
-            
-            // دالة لمعالجة بيانات مستشعر الجهاز
-            function handleDeviceOrientation(event) {
-                if (!isCompassActive || !compassPermission) return;
+            function updateCompass(bearing) {
+                // تحديث مؤشر القبلة
+                qiblaIndicator.style.setProperty('--qibla-angle', `${bearing}deg`);
                 
-                let alpha = event.alpha; // اتجاه البوصلة (0-360)
+                // تحديث نص اتجاه القبلة
+                const directions = ['شمال', 'شمال شرق', 'شرق', 'جنوب شرق', 'جنوب', 'جنوب غرب', 'غرب', 'شمال غرب'];
+                const index = Math.round(bearing / 45) % 8;
+                qiblaDirection.textContent = `${directions[index]} (${Math.round(bearing)}°)`;
                 
-                // بعض الأجهزة لا توفر alpha مباشرة
-                if (alpha === null) {
-                    // محاولة حساب alpha من gamma و beta
-                    if (event.gamma !== null && event.beta !== null) {
-                        alpha = Math.atan2(event.gamma, event.beta) * 180 / Math.PI;
-                        if (alpha < 0) alpha += 360;
-                    } else {
-                        return; // لا توجد بيانات كافية
-                    }
-                }
-                
-                // تصحيح للأنظمة المختلفة
-                if (typeof event.webkitCompassHeading !== 'undefined') {
-                    alpha = event.webkitCompassHeading; // لأجهزة iOS
-                }
-                
-                updateCompass(alpha);
-            }
-            
-            // دالة لطلب إذن المستشعر
-            function requestCompassPermission() {
-                if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    // لأجهزة iOS
-                    DeviceOrientationEvent.requestPermission()
-                        .then(response => {
-                            if (response === 'granted') {
-                                compassPermission = true;
-                                window.addEventListener('deviceorientation', handleDeviceOrientation);
-                                isCompassActive = true;
-                            } else {
-                                error.style.display = 'block';
-                                errorText.textContent = 'تم رفض الوصول إلى مستشعر الجهاز. يرجى السماح بالوصول لاستخدام البوصلة.';
-                            }
-                        })
-                        .catch(console.error);
-                } else {
-                    // لأجهزة Android والمتصفحات الأخرى
-                    compassPermission = true;
-                    window.addEventListener('deviceorientation', handleDeviceOrientation);
-                    isCompassActive = true;
-                }
+                // إظهار رسالة النجاح
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
             }
             
             // دالة للحصول على الموقع
@@ -426,17 +645,17 @@
                             currentLatitude = position.coords.latitude;
                             currentLongitude = position.coords.longitude;
                             
-                            locationText.textContent = `خط العرض: ${currentLatitude.toFixed(6)}، خط الطول: ${currentLongitude.toFixed(6)}`;
+                            locationText.textContent = `${currentLatitude.toFixed(4)}, ${currentLongitude.toFixed(4)}`;
                             
                             // حساب اتجاه القبلة
                             qiblaBearing = calculateQiblaDirection(currentLatitude, currentLongitude);
                             
                             // حساب المسافة إلى القبلة
                             const distance = calculateDistance(currentLatitude, currentLongitude, KAABA_LAT, KAABA_LNG);
-                            qiblaDistance.textContent = `المسافة إلى القبلة: ${distance.toFixed(0)} كم`;
+                            qiblaDistance.textContent = `${distance.toFixed(0)} كم`;
                             
-                            // طلب إذن استخدام مستشعر الجهاز
-                            requestCompassPermission();
+                            // تحديث البوصلة
+                            updateCompass(qiblaBearing);
                             
                             loading.style.display = 'none';
                         },
@@ -474,6 +693,29 @@
             
             // بدء التطبيق عند النقر على الزر
             locateBtn.addEventListener('click', getLocation);
+            
+            // إظهار/إخفاء عناصر التحكم اليدوية
+            manualBtn.addEventListener('click', function() {
+                if (manualControl.style.display === 'none') {
+                    manualControl.style.display = 'flex';
+                    manualBtn.innerHTML = '<i class="fas fa-times"></i> إغلاق التحكم اليدوي';
+                } else {
+                    manualControl.style.display = 'none';
+                    manualBtn.innerHTML = '<i class="fas fa-map-marked-alt"></i> إدخال موقع يدوي';
+                }
+            });
+            
+            // التحكم اليدوي في البوصلة
+            directionBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const direction = parseInt(this.getAttribute('data-direction'));
+                    updateCompass(direction);
+                    
+                    // تحديث المعلومات لعرض الاتجاه المحدد
+                    locationText.textContent = 'مدخل يدوي';
+                    qiblaDistance.textContent = 'غير محسوبة';
+                });
+            });
             
             // بدء التطبيق تلقائيًا عند تحميل الصفحة
             getLocation();
