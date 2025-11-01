@@ -20,6 +20,7 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            overflow-x: hidden;
         }
         
         .container {
@@ -62,7 +63,7 @@
             background: #0a1f2a;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             position: relative;
-            transition: transform 0.5s ease;
+            transition: transform 0.1s ease-out;
         }
         
         .compass-face {
@@ -153,6 +154,18 @@
             box-shadow: 0 0 10px #ff6b6b;
         }
         
+        .accuracy-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80%;
+            height: 80%;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        
         .info-panel {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
@@ -201,10 +214,25 @@
             display: none;
         }
         
+        .calibration-notice {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        
+        .debug-info {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
         @media (max-width: 600px) {
             .compass-container {
-                width: 250px;
-                height: 250px;
+                width: 280px;
+                height: 280px;
             }
             
             h1 {
@@ -231,8 +259,13 @@
                     <div class="qibla-label">القبلة</div>
                     <div class="needle" id="needle"></div>
                     <div class="center-dot"></div>
+                    <div class="accuracy-indicator" id="accuracyIndicator"></div>
                 </div>
             </div>
+        </div>
+        
+        <div class="calibration-notice">
+            <p>لأفضل دقة، قم بتحريك هاتفك بشكل رقم 8 في الهواء لمعايرة البوصلة</p>
         </div>
         
         <div class="info-panel">
@@ -244,6 +277,7 @@
             <div class="qibla-info">
                 <h3>اتجاه القبلة</h3>
                 <p id="qiblaDirection">جارٍ الحساب...</p>
+                <p id="qiblaDistance" class="debug-info"></p>
             </div>
         </div>
         
@@ -266,13 +300,17 @@
             const errorText = document.getElementById('errorText');
             const locationText = document.getElementById('locationText');
             const qiblaDirection = document.getElementById('qiblaDirection');
+            const qiblaDistance = document.getElementById('qiblaDistance');
             const qiblaIndicator = document.getElementById('qiblaIndicator');
             const needle = document.getElementById('needle');
             const compass = document.querySelector('.compass');
+            const accuracyIndicator = document.getElementById('accuracyIndicator');
             
             let currentLatitude = null;
             let currentLongitude = null;
-            let qiblaAngle = null;
+            let qiblaBearing = null;
+            let isCompassActive = false;
+            let compassPermission = false;
             
             // إحداثيات الكعبة المشرفة (القبلة)
             const KAABA_LAT = 21.4225;
@@ -285,19 +323,38 @@
                 const phi = lat * Math.PI / 180.0;
                 const lambda = lng * Math.PI / 180.0;
                 
-                const psi = 180.0 / Math.PI * Math.atan2(
-                    Math.sin(lambdaK - lambda),
-                    Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda)
-                );
+                const term1 = Math.sin(lambdaK - lambda);
+                const term2 = Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda);
                 
-                return psi;
+                let bearing = Math.atan2(term1, term2) * 180.0 / Math.PI;
+                
+                // التأكد من أن القيمة بين 0 و 360
+                if (bearing < 0) {
+                    bearing += 360;
+                }
+                
+                return bearing;
+            }
+            
+            // دالة لحساب المسافة إلى القبلة
+            function calculateDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371; // نصف قطر الأرض بالكيلومترات
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = 
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                const distance = R * c;
+                return distance;
             }
             
             // دالة لتحديث البوصلة
             function updateCompass(alpha) {
-                if (qiblaAngle !== null) {
+                if (qiblaBearing !== null) {
                     // حساب الفرق بين اتجاه الشمال الحقيقي واتجاه القبلة
-                    const bearing = (360 - alpha + qiblaAngle) % 360;
+                    const bearing = (360 - alpha + qiblaBearing) % 360;
                     
                     // تدوير البوصلة
                     compass.style.transform = `rotate(${bearing}deg)`;
@@ -306,6 +363,55 @@
                     const directions = ['شمال', 'شمال شرق', 'شرق', 'جنوب شرق', 'جنوب', 'جنوب غرب', 'غرب', 'شمال غرب'];
                     const index = Math.round(bearing / 45) % 8;
                     qiblaDirection.textContent = `اتجاه القبلة: ${directions[index]} (${Math.round(bearing)} درجة)`;
+                }
+            }
+            
+            // دالة لمعالجة بيانات مستشعر الجهاز
+            function handleDeviceOrientation(event) {
+                if (!isCompassActive || !compassPermission) return;
+                
+                let alpha = event.alpha; // اتجاه البوصلة (0-360)
+                
+                // بعض الأجهزة لا توفر alpha مباشرة
+                if (alpha === null) {
+                    // محاولة حساب alpha من gamma و beta
+                    if (event.gamma !== null && event.beta !== null) {
+                        alpha = Math.atan2(event.gamma, event.beta) * 180 / Math.PI;
+                        if (alpha < 0) alpha += 360;
+                    } else {
+                        return; // لا توجد بيانات كافية
+                    }
+                }
+                
+                // تصحيح للأنظمة المختلفة
+                if (typeof event.webkitCompassHeading !== 'undefined') {
+                    alpha = event.webkitCompassHeading; // لأجهزة iOS
+                }
+                
+                updateCompass(alpha);
+            }
+            
+            // دالة لطلب إذن المستشعر
+            function requestCompassPermission() {
+                if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    // لأجهزة iOS
+                    DeviceOrientationEvent.requestPermission()
+                        .then(response => {
+                            if (response === 'granted') {
+                                compassPermission = true;
+                                window.addEventListener('deviceorientation', handleDeviceOrientation);
+                                isCompassActive = true;
+                            } else {
+                                error.style.display = 'block';
+                                errorText.textContent = 'تم رفض الوصول إلى مستشعر الجهاز. يرجى السماح بالوصول لاستخدام البوصلة.';
+                            }
+                        })
+                        .catch(console.error);
+                } else {
+                    // لأجهزة Android والمتصفحات الأخرى
+                    compassPermission = true;
+                    window.addEventListener('deviceorientation', handleDeviceOrientation);
+                    isCompassActive = true;
                 }
             }
             
@@ -323,18 +429,14 @@
                             locationText.textContent = `خط العرض: ${currentLatitude.toFixed(6)}، خط الطول: ${currentLongitude.toFixed(6)}`;
                             
                             // حساب اتجاه القبلة
-                            qiblaAngle = calculateQiblaDirection(currentLatitude, currentLongitude);
+                            qiblaBearing = calculateQiblaDirection(currentLatitude, currentLongitude);
                             
-                            // بدء تتبع اتجاه البوصلة
-                            if (window.DeviceOrientationEvent) {
-                                window.addEventListener('deviceorientation', function(event) {
-                                    if (event.alpha !== null) {
-                                        updateCompass(event.alpha);
-                                    }
-                                });
-                            } else {
-                                qiblaDirection.textContent = 'جهازك لا يدعم البوصلة. سيتم عرض اتجاه القبلة فقط.';
-                            }
+                            // حساب المسافة إلى القبلة
+                            const distance = calculateDistance(currentLatitude, currentLongitude, KAABA_LAT, KAABA_LNG);
+                            qiblaDistance.textContent = `المسافة إلى القبلة: ${distance.toFixed(0)} كم`;
+                            
+                            // طلب إذن استخدام مستشعر الجهاز
+                            requestCompassPermission();
                             
                             loading.style.display = 'none';
                         },
@@ -359,14 +461,14 @@
                         },
                         {
                             enableHighAccuracy: true,
-                            timeout: 10000,
+                            timeout: 15000,
                             maximumAge: 60000
                         }
                     );
                 } else {
                     loading.style.display = 'none';
                     error.style.display = 'block';
-                    errorText.textContent = 'متصفحك لا يدخدم خدمة تحديد الموقع.';
+                    errorText.textContent = 'متصفحك لا يدعم خدمة تحديد الموقع.';
                 }
             }
             
